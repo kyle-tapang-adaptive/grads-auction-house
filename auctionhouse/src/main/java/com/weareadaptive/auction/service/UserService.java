@@ -5,7 +5,7 @@ import com.weareadaptive.auction.model.UserState;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserService {
+public class  UserService {
   private final UserState userState;
 
   public UserService(UserState userState) {
@@ -14,6 +14,9 @@ public class UserService {
 
   public User create(String username, String password, String firstName, String lastName,
                      String organisation) {
-    throw new UnsupportedOperationException();
+    User newUser = new User(userState.nextId(), username, password, firstName, lastName, organisation);
+    userState.add(newUser);
+    return newUser;
+    //throw new UnsupportedOperationException();
   }
 }

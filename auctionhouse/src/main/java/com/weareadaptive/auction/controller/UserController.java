@@ -1,14 +1,23 @@
 package com.weareadaptive.auction.controller;
 
+import static com.weareadaptive.auction.controller.UserMapper.map;
+
 import com.weareadaptive.auction.controller.dto.CreateUserRequest;
+import com.weareadaptive.auction.controller.dto.UpdateUserRequest;
 import com.weareadaptive.auction.controller.dto.UserResponse;
 import com.weareadaptive.auction.model.User;
 import com.weareadaptive.auction.service.UserService;
+import java.util.List;
+import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 //@RequestMapping("/users")
@@ -22,13 +31,50 @@ public class UserController {
 
   @PostMapping("/users")
   @ResponseStatus(HttpStatus.CREATED)
-  UserResponse createUser(@RequestBody @Valid CreateUserRequest createUserRequest) {
-    User newUser = userService.create(
-            createUserRequest.username(),
-            createUserRequest.password(),
-            createUserRequest.firstName(),
-            createUserRequest.lastName(),
-            createUserRequest.organisation());
-    return new UserResponse(newUser.getId(), newUser.getUsername(), newUser.getFirstName(), newUser.getLastName(), newUser.getOrganisation());
+  UserResponse create(@RequestBody @Valid CreateUserRequest createUserRequest) {
+    User user = userService.create(
+        createUserRequest.username(),
+        createUserRequest.password(),
+        createUserRequest.firstName(),
+        createUserRequest.lastName(),
+        createUserRequest.organisation());
+    return map(user);
+  }
+
+  @GetMapping("/users/{id}")
+  UserResponse one(@PathVariable int id) {
+    User user = userService.get(id);
+    return map(user);
+  }
+
+  @GetMapping("/users")
+  List<UserResponse> all() {
+    return userService.all()
+      .map(UserMapper::map)
+      .toList();
+  }
+
+  @PutMapping("/users/{id}")
+  @ResponseStatus(HttpStatus.OK)
+  UserResponse update(@RequestBody @Valid UpdateUserRequest updateUserRequest,
+                      @PathVariable int id) {
+    User user = userService.update(
+        id,
+        updateUserRequest.firstName(),
+        updateUserRequest.lastName(),
+        updateUserRequest.organisation());
+    return map(user);
+  }
+
+  @PutMapping("/users/{id}/block")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  void block(@PathVariable int id) {
+    userService.block(id);
+  }
+
+  @PutMapping("/users/{id}/unblock")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  void unblock(@PathVariable int id) {
+    userService.unblock(id);
   }
 }

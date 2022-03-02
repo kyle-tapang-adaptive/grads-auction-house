@@ -4,6 +4,8 @@ import com.weareadaptive.auction.model.User;
 import com.weareadaptive.auction.model.UserState;
 import org.springframework.stereotype.Service;
 
+import java.util.stream.Stream;
+
 @Service
 public class  UserService {
   private final UserState userState;
@@ -18,5 +20,29 @@ public class  UserService {
     userState.add(newUser);
     return newUser;
     //throw new UnsupportedOperationException();
+  }
+
+  public User get(int id) {
+    return userState.get(id);
+  }
+
+  public Stream<User> all(){
+    return userState.stream();
+  }
+
+  public User update(int id, String firstName, String lastName, String organisation) {
+    User user = userState.get(id);
+    user.setFirstName(firstName);
+    user.setLastName(lastName);
+    user.setOrganisation(organisation);
+    return user;
+  }
+
+  public void block(int id) {
+    userState.get(id).block();
+  }
+
+  public void unblock(int id) {
+    userState.get(id).unblock();
   }
 }

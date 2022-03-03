@@ -6,7 +6,9 @@ import static com.weareadaptive.auction.controller.mapper.AuctionLotMapper.map;
 import com.weareadaptive.auction.controller.dto.AuctionLotResponse;
 import com.weareadaptive.auction.controller.dto.CreateAuctionLotRequest;
 import com.weareadaptive.auction.controller.dto.UserResponse;
+import com.weareadaptive.auction.controller.mapper.AuctionLotMapper;
 import com.weareadaptive.auction.model.AuctionLot;
+import com.weareadaptive.auction.model.Bid;
 import com.weareadaptive.auction.service.AuctionLotService;
 
 import javax.validation.Valid;
@@ -20,6 +22,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
+import java.util.List;
+
 
 @RestController
 @PreAuthorize("hasRole('ROLE_USER')")
@@ -32,8 +37,10 @@ public class AuctionLotController {
 
   @PostMapping("/auctions")
   @ResponseStatus(HttpStatus.CREATED)
-  AuctionLotResponse create(@RequestBody @Valid CreateAuctionLotRequest createAuctionLotRequest) {
+  AuctionLotResponse create(Principal principal,
+                            @RequestBody @Valid CreateAuctionLotRequest createAuctionLotRequest) {
     AuctionLot auctionLot = auctionLotService.create(
+        principal.getName(),
         createAuctionLotRequest.symbol(),
         createAuctionLotRequest.minPrice(),
         createAuctionLotRequest.quantity());
@@ -41,8 +48,15 @@ public class AuctionLotController {
   }
 
   @GetMapping("/auctions/{id}")
-  AuctionLotResponse one(@PathVariable int id) {
+  AuctionLotResponse oneAuction(@PathVariable int id) {
     AuctionLot auctionLot = auctionLotService.get(id);
     return map(auctionLot);
+  }
+
+  @GetMapping("/auctions/")
+  List<AuctionLotResponse> allAuctions(Principal principal) {
+    return auctionLotService.all()
+      .map(AuctionLotMapper::map)
+      .toList();
   }
 }

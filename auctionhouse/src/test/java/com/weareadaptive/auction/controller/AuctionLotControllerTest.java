@@ -21,6 +21,7 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -46,11 +47,12 @@ public class AuctionLotControllerTest {
   @Test
   public void shouldReturnAuctionIfCreated() {
     User testUser = testData.user1();
+    AuctionLot testAuctionLot = testData.auctionLot1();
     var createRequest =
       new CreateAuctionLotRequest(
-        "APPL",
-        50.0F,
-        5
+        testAuctionLot.getSymbol(),
+        testAuctionLot.getMinPrice(),
+        testAuctionLot.getQuantity()
       );
 
     //@formatter:off
@@ -63,7 +65,7 @@ public class AuctionLotControllerTest {
       .post("/auctions")
       .then()
       .statusCode(HttpStatus.CREATED.value())
-      .body("id", greaterThanOrEqualTo(0))
+      .body("id", greaterThanOrEqualTo(1))
       .body("owner", equalTo(testUser.getUsername()))
       .body("symbol", equalTo(createRequest.symbol()))
       .body("minPrice", equalTo((float) createRequest.minPrice()))
@@ -74,30 +76,42 @@ public class AuctionLotControllerTest {
 
   @DisplayName("get should return an auctionLot")
   @Test
-  public void shouldReturnUserIfAuctionLot() {
+  public void shouldReturnAuctionLotIfExists() {
     User testUser = testData.user1();
-    var createRequest =
-      new CreateAuctionLotRequest(
-        "APPL",
-        50.0F,
-        5
-      );
+    AuctionLot testAuctionLot = testData.auctionLot1();
 
     //@formatter:off
     given()
       .baseUri(uri)
       .header(AUTHORIZATION, testData.getToken(testUser))
-      .pathParam("id", 0)
+      .pathParam("id", testAuctionLot.getId())
       .when()
       .get("/auctions/{id}")
       .then()
       .statusCode(HttpStatus.OK.value())
-      .body("id", greaterThanOrEqualTo(0))
+      .body("id", greaterThanOrEqualTo(1))
       .body("owner", equalTo(testUser.getUsername()))
-      .body("symbol", equalTo(createRequest.symbol()))
-      .body("minPrice", equalTo((float) createRequest.minPrice()))
-      .body("quantity", equalTo(createRequest.quantity()))
-      .body("status", equalTo(AuctionLot.Status.OPENED.toString()));
+      .body("symbol", equalTo(testAuctionLot.getSymbol()))
+      .body("minPrice", equalTo((float) testAuctionLot.getMinPrice()))
+      .body("quantity", equalTo(testAuctionLot.getQuantity()))
+      .body("status", equalTo(testAuctionLot.getStatus().toString()));
+    //@formatter:on
+  }
+
+  @DisplayName("get should when return 404 when auctionLot doesn't exist")
+  @Test
+  public void shouldReturn404WhenAuctionLotDoesntExist() {
+    User testUser = testData.user1();
+
+    //@formatter:off
+    given()
+      .baseUri(uri)
+      .header(AUTHORIZATION, testData.getToken(testUser))
+      .pathParam("id", 99999)
+      .when()
+      .get("/auctions/{id}")
+      .then()
+      .statusCode(NOT_FOUND.value());
     //@formatter:on
   }
 }

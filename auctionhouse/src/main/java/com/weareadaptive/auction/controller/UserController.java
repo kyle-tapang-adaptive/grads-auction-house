@@ -1,10 +1,11 @@
 package com.weareadaptive.auction.controller;
 
-import static com.weareadaptive.auction.controller.UserMapper.map;
+import static com.weareadaptive.auction.controller.mapper.UserMapper.map;
 
 import com.weareadaptive.auction.controller.dto.CreateUserRequest;
 import com.weareadaptive.auction.controller.dto.UpdateUserRequest;
 import com.weareadaptive.auction.controller.dto.UserResponse;
+import com.weareadaptive.auction.controller.mapper.UserMapper;
 import com.weareadaptive.auction.model.User;
 import com.weareadaptive.auction.service.UserService;
 import java.util.List;

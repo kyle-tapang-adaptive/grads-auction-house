@@ -71,7 +71,7 @@ public class AuctionLotControllerTest {
       .body("id", greaterThanOrEqualTo(1))
       .body("owner", equalTo(testUser.getUsername()))
       .body("symbol", equalTo(createRequest.symbol()))
-      .body("minPrice", equalTo((float) createRequest.minPrice()))
+      .body("minPrice", equalTo( (float) createRequest.minPrice() ))
       .body("quantity", equalTo(createRequest.quantity()))
       .body("status", equalTo(AuctionLot.Status.OPENED.toString()));
     //@formatter:on
@@ -95,7 +95,7 @@ public class AuctionLotControllerTest {
       .body("id", greaterThanOrEqualTo(1))
       .body("owner", equalTo(testUser.getUsername()))
       .body("symbol", equalTo(testAuctionLot.getSymbol()))
-      .body("minPrice", equalTo((float) testAuctionLot.getMinPrice()))
+      .body("minPrice", equalTo( (float) testAuctionLot.getMinPrice() ))
       .body("quantity", equalTo(testAuctionLot.getQuantity()))
       .body("status", equalTo(testAuctionLot.getStatus().toString()));
     //@formatter:on
@@ -138,14 +138,14 @@ public class AuctionLotControllerTest {
       .body(find1 + "id", greaterThanOrEqualTo(testData.auctionLot1().getId()))
       .body(find1 + "owner", equalTo(testData.auctionLot1().getOwner().getUsername()))
       .body(find1 + "symbol", equalTo(testData.auctionLot1().getSymbol()))
-      .body(find1 + "minPrice", equalTo((float) testData.auctionLot1().getMinPrice()))
+      .body(find1 + "minPrice", equalTo( (float) testData.auctionLot1().getMinPrice() ))
       .body(find1 + "quantity", equalTo(testData.auctionLot1().getQuantity()))
       .body(find1 + "status", equalTo(testData.auctionLot1().getStatus().toString()))
       // Validate Auction2
       .body(find2 + "id", greaterThanOrEqualTo(testData.auctionLot2().getId()))
       .body(find2 + "owner", equalTo(testData.auctionLot2().getOwner().getUsername()))
       .body(find2 + "symbol", equalTo(testData.auctionLot2().getSymbol()))
-      .body(find2 + "minPrice", equalTo((float) testData.auctionLot2().getMinPrice()))
+      .body(find2 + "minPrice", equalTo( (float) testData.auctionLot2().getMinPrice() ))
       .body(find2 + "quantity", equalTo(testData.auctionLot2().getQuantity()))
       .body(find2 + "status", equalTo(testData.auctionLot2().getStatus().toString()));
     //@formatter:on
@@ -202,12 +202,11 @@ public class AuctionLotControllerTest {
       .statusCode(HttpStatus.OK.value())
       .body(find1 + "username", equalTo(testUser2.getUsername()))
       .body(find1 + "quantity", equalTo(testAuctionLot.getQuantity()))
-      .body(find1 + "price", equalTo((float) testAuctionLot.getMinPrice()))
+      .body(find1 + "price", equalTo( (float) testAuctionLot.getMinPrice() ))
       .body(find1 + "state", equalTo(Bid.State.PENDING.toString()))
-
       .body(find2 + "username", equalTo(testUser3.getUsername()))
       .body(find2 + "quantity", equalTo(testAuctionLot.getQuantity()))
-      .body(find2 + "price", equalTo((float) testAuctionLot.getMinPrice()))
+      .body(find2 + "price", equalTo( (float) testAuctionLot.getMinPrice() ))
       .body(find2 + "state", equalTo(Bid.State.PENDING.toString()));
   }
 
@@ -216,7 +215,7 @@ public class AuctionLotControllerTest {
   public void shouldReturnClosingSummaryWhenClosingAnAuctionLot(){
     User testUser2 = testData.user2();
     User testUser3 = testData.user3();
-    AuctionLot testAuctionLot = testData.auctionLot4();
+    AuctionLot testAuctionLot = testData.auctionLot3();
 
     testAuctionLot.bid(testUser2, testAuctionLot.getQuantity(), testAuctionLot.getMinPrice());
     testAuctionLot.bid(testUser3, testAuctionLot.getQuantity(), testAuctionLot.getMinPrice() + 1.0);
@@ -230,14 +229,13 @@ public class AuctionLotControllerTest {
       .when()
       .put("/auctions/{id}/close")
       .then()
-      .log().all()
       .statusCode(HttpStatus.OK.value())
       .body(find1 + "username", equalTo(testUser3.getUsername()))
       .body(find1 + "quantity", equalTo(testAuctionLot.getQuantity()))
-      //price
+      .body(find1 + "price", equalTo( (float) (testAuctionLot.getMinPrice() + 1.0) ))
       .body(find1 + "state", equalTo("WIN"))
-      .body("totalSoldQuantity", equalTo(testAuctionLot.getQuantity()));
-      //totalRevenue
+      .body("totalSoldQuantity", equalTo(testAuctionLot.getQuantity()))
+      .body("totalRevenue", equalTo(testAuctionLot.getQuantity() * (float) (testAuctionLot.getMinPrice() + 1.0)));
       //closingTime
   }
 
@@ -246,7 +244,7 @@ public class AuctionLotControllerTest {
   public void shouldReturnClosingSummaryOnClosedAuction(){
     User testUser2 = testData.user2();
     User testUser3 = testData.user3();
-    AuctionLot testAuctionLot = testData.auctionLot3();
+    AuctionLot testAuctionLot = testData.auctionLot4();
 
     testAuctionLot.bid(testUser2, testAuctionLot.getQuantity(), testAuctionLot.getMinPrice());
     testAuctionLot.bid(testUser3, testAuctionLot.getQuantity(), testAuctionLot.getMinPrice() + 1.0);
@@ -262,14 +260,13 @@ public class AuctionLotControllerTest {
       .when()
       .get("/auctions/{id}/closingSummary")
       .then()
-      .log().all()
       .statusCode(HttpStatus.OK.value())
       .body(find1 + "username", equalTo(testUser3.getUsername()))
       .body(find1 + "quantity", equalTo(testAuctionLot.getQuantity()))
-      //price
+      .body(find1 + "price", equalTo( (float) (testAuctionLot.getMinPrice() + 1.0) ))
       .body(find1 + "state", equalTo("WIN"))
-      .body("totalSoldQuantity", equalTo(testAuctionLot.getQuantity()));
-    //totalRevenue
-    //closingTime
+      .body("totalSoldQuantity", equalTo(testAuctionLot.getQuantity()))
+      .body("totalRevenue", equalTo(testAuctionLot.getQuantity() * (float) (testAuctionLot.getMinPrice() + 1.0)));
+      //closingTime
   }
 }

@@ -109,7 +109,7 @@ public class TestData {
   }
 
   public AuctionLot createRandomAuction(){
-    return auctionLotService.create(
+    return auctionLotService.createAuctionLot(
       user1.getUsername(),
       randomStock().toString(),
       faker.number().randomDouble(2, 1, 100),

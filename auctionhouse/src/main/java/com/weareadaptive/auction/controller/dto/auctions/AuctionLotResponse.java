@@ -1,4 +1,4 @@
-package com.weareadaptive.auction.controller.dto;
+package com.weareadaptive.auction.controller.dto.auctions;
 
 import com.weareadaptive.auction.model.AuctionLot;
 

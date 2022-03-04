@@ -1,10 +1,10 @@
-package com.weareadaptive.auction.controller.dto;
+package com.weareadaptive.auction.controller.dto.auctions;
 
 import com.weareadaptive.auction.model.AuctionLot;
 import java.time.Instant;
 
 public class ClosedAuctionLotResponse extends AuctionLotResponse {
-  Instant closedTime;
+  private final Instant closedTime;
 
   public ClosedAuctionLotResponse(
       int id,
@@ -16,5 +16,9 @@ public class ClosedAuctionLotResponse extends AuctionLotResponse {
       Instant closedTime) {
     super(id, owner, symbol, minPrice, quantity, status);
     this.closedTime = closedTime;
+  }
+
+  public Instant getClosedTime() {
+    return closedTime;
   }
 }

@@ -1,6 +1,6 @@
 package com.weareadaptive.auction.controller.mapper;
 
-import com.weareadaptive.auction.controller.dto.UserResponse;
+import com.weareadaptive.auction.controller.dto.users.UserResponse;
 import com.weareadaptive.auction.model.User;
 
 public class UserMapper {

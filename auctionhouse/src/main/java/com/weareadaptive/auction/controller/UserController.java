@@ -2,9 +2,9 @@ package com.weareadaptive.auction.controller;
 
 import static com.weareadaptive.auction.controller.mapper.UserMapper.map;
 
-import com.weareadaptive.auction.controller.dto.CreateUserRequest;
-import com.weareadaptive.auction.controller.dto.UpdateUserRequest;
-import com.weareadaptive.auction.controller.dto.UserResponse;
+import com.weareadaptive.auction.controller.dto.users.CreateUserRequest;
+import com.weareadaptive.auction.controller.dto.users.UpdateUserRequest;
+import com.weareadaptive.auction.controller.dto.users.UserResponse;
 import com.weareadaptive.auction.controller.mapper.UserMapper;
 import com.weareadaptive.auction.model.User;
 import com.weareadaptive.auction.service.UserService;
@@ -43,7 +43,7 @@ public class UserController {
   }
 
   @GetMapping("/users/{id}")
-  UserResponse one(@PathVariable int id) {
+  UserResponse get(@PathVariable int id) {
     User user = userService.get(id);
     return map(user);
   }
@@ -57,8 +57,9 @@ public class UserController {
 
   @PutMapping("/users/{id}")
   @ResponseStatus(HttpStatus.OK)
-  UserResponse update(@RequestBody @Valid UpdateUserRequest updateUserRequest,
-                      @PathVariable int id) {
+  UserResponse update(
+      @RequestBody @Valid UpdateUserRequest updateUserRequest,
+      @PathVariable int id) {
     User user = userService.update(
         id,
         updateUserRequest.firstName(),

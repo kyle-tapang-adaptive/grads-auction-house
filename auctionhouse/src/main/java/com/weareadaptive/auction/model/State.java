@@ -1,7 +1,6 @@
 package com.weareadaptive.auction.model;
 
 import com.weareadaptive.auction.exception.KeyDoesNotExistException;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;

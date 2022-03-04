@@ -1,4 +1,4 @@
-package com.weareadaptive.auction.controller.dto;
+package com.weareadaptive.auction.controller.dto.auctions;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;

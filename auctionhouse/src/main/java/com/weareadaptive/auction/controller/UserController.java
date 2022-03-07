@@ -32,7 +32,7 @@ public class UserController {
 
   @PostMapping("/users")
   @ResponseStatus(HttpStatus.CREATED)
-  UserResponse create(@RequestBody @Valid CreateUserRequest createUserRequest) {
+  public UserResponse create(@RequestBody @Valid CreateUserRequest createUserRequest) {
     User user = userService.create(
         createUserRequest.username(),
         createUserRequest.password(),
@@ -43,13 +43,13 @@ public class UserController {
   }
 
   @GetMapping("/users/{id}")
-  UserResponse get(@PathVariable int id) {
+  public UserResponse get(@PathVariable int id) {
     User user = userService.get(id);
     return map(user);
   }
 
   @GetMapping("/users")
-  List<UserResponse> all() {
+  public List<UserResponse> all() {
     return userService.all()
       .map(UserMapper::map)
       .toList();
@@ -57,7 +57,7 @@ public class UserController {
 
   @PutMapping("/users/{id}")
   @ResponseStatus(HttpStatus.OK)
-  UserResponse update(
+  public UserResponse update(
       @RequestBody @Valid UpdateUserRequest updateUserRequest,
       @PathVariable int id) {
     User user = userService.update(
@@ -70,13 +70,13 @@ public class UserController {
 
   @PutMapping("/users/{id}/block")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  void block(@PathVariable int id) {
+  public void block(@PathVariable int id) {
     userService.block(id);
   }
 
   @PutMapping("/users/{id}/unblock")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  void unblock(@PathVariable int id) {
+  public void unblock(@PathVariable int id) {
     userService.unblock(id);
   }
 }

@@ -36,7 +36,7 @@ public class AuctionLotController {
 
   @PostMapping("/auctions")
   @ResponseStatus(HttpStatus.CREATED)
-  AuctionLotResponse createAuctionLot(
+  public AuctionLotResponse createAuctionLot(
       Principal principal,
       @RequestBody @Valid CreateAuctionLotRequest createAuctionLotRequest) {
     AuctionLot auctionLot = auctionLotService.createAuctionLot(
@@ -48,20 +48,20 @@ public class AuctionLotController {
   }
 
   @GetMapping("/auctions/{id}")
-  AuctionLotResponse getAuctionLot(@PathVariable int id) {
+  public AuctionLotResponse getAuctionLot(@PathVariable int id) {
     AuctionLot auctionLot = auctionLotService.getAuctionLot(id);
     return AuctionLotMapper.map(auctionLot);
   }
 
   @GetMapping("/auctions")
-  List<AuctionLotResponse> getAllAuctionLots() {
+  public List<AuctionLotResponse> getAllAuctionLots() {
     return auctionLotService.getAllAuctionLots()
       .map(AuctionLotMapper::map)
       .toList();
   }
 
   @PostMapping("/auctions/{id}/bids")
-  BidResponse createBid(
+  public BidResponse createBid(
       Principal principal,
       @RequestBody @Valid CreateBidRequest createBidRequest,
       @PathVariable int id) {
@@ -75,7 +75,7 @@ public class AuctionLotController {
   }
 
   @GetMapping("/auctions/{id}/bids")
-  List<BidResponse> getBids(
+  public List<BidResponse> getBids(
       Principal principal,
       @PathVariable int id) {
     return auctionLotService.getBids(principal.getName(), id)
@@ -85,7 +85,7 @@ public class AuctionLotController {
   }
 
   @PutMapping("/auctions/{id}/close")
-  ClosingSummaryResponse close(
+  public ClosingSummaryResponse close(
       Principal principal,
       @PathVariable int id) {
     ClosingSummary closingSummary = auctionLotService.close(principal.getName(), id);
@@ -93,7 +93,7 @@ public class AuctionLotController {
   }
 
   @GetMapping("/auctions/{id}/closingSummary")
-  ClosingSummaryResponse getClosingSummary(@PathVariable int id) {
+  public ClosingSummaryResponse getClosingSummary(@PathVariable int id) {
     ClosingSummary closingSummary = auctionLotService.getClosingSummary(id);
     return ClosingSummaryMapper.map(closingSummary);
   }

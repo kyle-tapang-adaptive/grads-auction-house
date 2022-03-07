@@ -10,6 +10,7 @@ import com.weareadaptive.auction.model.User;
 import com.weareadaptive.auction.service.AuctionLotService;
 import com.weareadaptive.auction.service.UserService;
 import io.restassured.http.ContentType;
+import java.math.BigDecimal;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,6 +21,7 @@ import org.springframework.http.HttpStatus;
 
 import static io.restassured.RestAssured.given;
 import static java.lang.String.format;
+import static java.math.BigDecimal.valueOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -217,8 +219,12 @@ public class AuctionLotControllerTest {
     User testUser3 = testData.user3();
     AuctionLot testAuctionLot = testData.auctionLot3();
 
+    double winningPrice = testAuctionLot.getMinPrice() + 1.0;
+    BigDecimal revenue = BigDecimal.ZERO;
+    revenue = revenue.add(valueOf(winningPrice).multiply(valueOf(testAuctionLot.getQuantity())));
+
     testAuctionLot.bid(testUser2, testAuctionLot.getQuantity(), testAuctionLot.getMinPrice());
-    testAuctionLot.bid(testUser3, testAuctionLot.getQuantity(), testAuctionLot.getMinPrice() + 1.0);
+    testAuctionLot.bid(testUser3, testAuctionLot.getQuantity(), winningPrice);
 
     var find1 = format("winBids.find { it.username == '%s' }.", testUser3.getUsername());
 
@@ -232,10 +238,10 @@ public class AuctionLotControllerTest {
       .statusCode(HttpStatus.OK.value())
       .body(find1 + "username", equalTo(testUser3.getUsername()))
       .body(find1 + "quantity", equalTo(testAuctionLot.getQuantity()))
-      .body(find1 + "price", equalTo( (float) (testAuctionLot.getMinPrice() + 1.0) ))
+      .body(find1 + "price", equalTo( (float) winningPrice ))
       .body(find1 + "state", equalTo("WIN"))
       .body("totalSoldQuantity", equalTo(testAuctionLot.getQuantity()))
-      .body("totalRevenue", equalTo(testAuctionLot.getQuantity() * (float) (testAuctionLot.getMinPrice() + 1.0)));
+      .body("totalRevenue", equalTo(revenue.floatValue()));
       //closingTime
   }
 
@@ -246,8 +252,12 @@ public class AuctionLotControllerTest {
     User testUser3 = testData.user3();
     AuctionLot testAuctionLot = testData.auctionLot4();
 
+    double winningPrice = testAuctionLot.getMinPrice() + 1.0;
+    BigDecimal revenue = BigDecimal.ZERO;
+    revenue = revenue.add(valueOf(winningPrice).multiply(valueOf(testAuctionLot.getQuantity())));
+
     testAuctionLot.bid(testUser2, testAuctionLot.getQuantity(), testAuctionLot.getMinPrice());
-    testAuctionLot.bid(testUser3, testAuctionLot.getQuantity(), testAuctionLot.getMinPrice() + 1.0);
+    testAuctionLot.bid(testUser3, testAuctionLot.getQuantity(), winningPrice);
 
     var find1 = format("winBids.find { it.username == '%s' }.", testUser3.getUsername());
 
@@ -263,10 +273,10 @@ public class AuctionLotControllerTest {
       .statusCode(HttpStatus.OK.value())
       .body(find1 + "username", equalTo(testUser3.getUsername()))
       .body(find1 + "quantity", equalTo(testAuctionLot.getQuantity()))
-      .body(find1 + "price", equalTo( (float) (testAuctionLot.getMinPrice() + 1.0) ))
+      .body(find1 + "price", equalTo( (float) winningPrice ))
       .body(find1 + "state", equalTo("WIN"))
       .body("totalSoldQuantity", equalTo(testAuctionLot.getQuantity()))
-      .body("totalRevenue", equalTo(testAuctionLot.getQuantity() * (float) (testAuctionLot.getMinPrice() + 1.0)));
+      .body("totalRevenue", equalTo(revenue.floatValue()));
       //closingTime
   }
 }

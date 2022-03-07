@@ -98,14 +98,13 @@ public class TestData {
 
   public User createRandomUser() {
     var name = faker.name();
-    var user = userService.create(
+    return userService.create(
       name.username(),
       PASSWORD,
       name.firstName(),
       name.lastName(),
       faker.company().name()
     );
-    return user;
   }
 
   public AuctionLot createRandomAuction(){

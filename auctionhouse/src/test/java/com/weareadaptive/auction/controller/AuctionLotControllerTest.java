@@ -29,7 +29,6 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AuctionLotControllerTest {
-  public static final int INVALID_USER_ID = 99999;
   public static final int INVALID_AUCTION_ID = 99999;
 
   @Autowired

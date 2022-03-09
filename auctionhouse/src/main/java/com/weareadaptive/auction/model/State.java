@@ -1,6 +1,6 @@
 package com.weareadaptive.auction.model;
 
-import com.weareadaptive.auction.exception.KeyDoesNotExistException;
+import com.weareadaptive.auction.exception.ItemDoesNotExistException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -37,7 +37,7 @@ public class State<T extends Entity> {
 
   public T get(int id) {
     if (!entities.containsKey(id)) {
-      throw new KeyDoesNotExistException(ITEM_DOES_NOT_EXIST);
+      throw new ItemDoesNotExistException(ITEM_DOES_NOT_EXIST);
     }
     return entities.get(id);
   }

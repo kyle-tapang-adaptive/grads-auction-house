@@ -1,14 +1,14 @@
-create table AuctionUser(
-    id serial primary key not null,
-    username varchar(50) unique not null,
-    password varchar(50) not null,
-    isAdmin boolean not null,
-    first_name varchar(50) not null,
-    last_name varchar(50) not null,
-    organisation varchar(50) not null,
-    blocked boolean not null,
+CREATE TABLE auction_user
+(
+    id           SERIAL PRIMARY KEY,
+    username     VARCHAR(50) UNIQUE NOT NULL,
+    password     VARCHAR(50)        NOT NULL,
+    is_admin     BOOLEAN            NOT NULL,
+    first_name   VARCHAR(50)        NOT NULL,
+    last_name    VARCHAR(50)        NOT NULL,
+    organisation VARCHAR(50)        NOT NULL,
+    blocked      BOOLEAN            NOT NUll
 );
 
-insert into AuctionUser (
-    username, password, isAdmin, first_name, last_name, organisation, blocked
-) values ('ADMIN', 'adminpassword', true, 'admin', 'admin', 'Adaptive', false);
+INSERT INTO auction_user (username, password, is_admin, first_name, last_name, organisation, blocked)
+VALUES ('ADMIN', 'adminpassword', TRUE, 'admin', 'admin', 'Adaptive', FALSE);

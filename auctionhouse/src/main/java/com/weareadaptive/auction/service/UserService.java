@@ -1,5 +1,7 @@
 package com.weareadaptive.auction.service;
 
+import com.weareadaptive.auction.exception.ItemDoesNotExistException;
+import com.weareadaptive.auction.model.BusinessException;
 import com.weareadaptive.auction.model.User;
 import com.weareadaptive.auction.repository.UserRepository;
 import java.util.Optional;
@@ -22,6 +24,11 @@ public class UserService {
       String lastName,
       String organisation) {
 
+    userRepository.getByUsername(username)
+        .ifPresent(u -> {
+          throw new BusinessException("Item already exists");
+        });
+
     User user = new User();
 
     user.setUsername(username);
@@ -34,11 +41,12 @@ public class UserService {
   }
 
   public User get(int id) {
-    return userRepository.get(id);
+    return userRepository.get(id)
+      .orElseThrow(() -> new ItemDoesNotExistException("User does not exist"));
   }
 
   public Stream<User> all() {
-    return userRepository.all();
+    return userRepository.all().stream();
   }
 
   public User update(
@@ -46,22 +54,19 @@ public class UserService {
       String firstName,
       String lastName,
       String organisation) {
-
-    User user = userRepository.get(id);
-
-    user.setFirstName(firstName);
-    user.setLastName(lastName);
-    user.setOrganisation(organisation);
-
-    return userRepository.save(user);
+    get(id); //Checks if user exists, else throws
+    userRepository.update(id, firstName, lastName, organisation);
+    return get(id);
   }
 
   public void block(int id) {
-    userRepository.get(id).block();
+    get(id); //Checks if user exists, else throws
+    userRepository.block(id);
   }
 
   public void unblock(int id) {
-    userRepository.get(id).unblock();
+    get(id); //Checks if user exists, else throws
+    userRepository.unblock(id);
   }
 
   public Optional<User> validateUsernamePassword(String username, String password) {

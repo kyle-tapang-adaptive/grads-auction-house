@@ -65,21 +65,22 @@ public class TestData {
     return user4;
   }
 
-  public AuctionLot auctionLot1(){
+  public AuctionLot auctionLot1() {
     return auctionLot1;
   }
 
-  public AuctionLot auctionLot2(){
+  public AuctionLot auctionLot2() {
     return auctionLot2;
   }
 
-  public AuctionLot auctionLot3(){
+  public AuctionLot auctionLot3() {
     return auctionLot3;
   }
 
-  public AuctionLot auctionLot4(){
+  public AuctionLot auctionLot4() {
     return auctionLot4;
   }
+
   public String user1Token() {
     return getToken(user1);
   }
@@ -107,7 +108,7 @@ public class TestData {
     );
   }
 
-  public AuctionLot createRandomAuction(){
+  public AuctionLot createRandomAuction() {
     return auctionLotService.createAuctionLot(
       user1.getUsername(),
       randomStock().toString(),
@@ -115,7 +116,7 @@ public class TestData {
       faker.number().numberBetween(1, 100));
   }
 
-  public Stock randomStock(){
+  public Stock randomStock() {
     Random random = new Random();
     return Arrays.stream(Stock.values()).toList().get(random.nextInt(3));
   }

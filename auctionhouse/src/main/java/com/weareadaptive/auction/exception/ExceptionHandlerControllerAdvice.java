@@ -42,9 +42,9 @@ public class ExceptionHandlerControllerAdvice {
       BAD_REQUEST);
   }
 
-  @ExceptionHandler(KeyDoesNotExistException.class)
+  @ExceptionHandler(ItemDoesNotExistException.class)
   public ResponseEntity<Object> handleNotFoundException(
-      KeyDoesNotExistException ex) {
+      ItemDoesNotExistException ex) {
     var headers = new HttpHeaders();
     headers.setContentType(APPLICATION_PROBLEM_JSON);
     return new ResponseEntity<>(

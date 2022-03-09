@@ -1,6 +1,6 @@
 package com.weareadaptive.auction.service;
 
-import com.weareadaptive.auction.exception.KeyDoesNotExistException;
+import com.weareadaptive.auction.exception.ItemDoesNotExistException;
 import com.weareadaptive.auction.model.AuctionLot;
 import com.weareadaptive.auction.model.AuctionState;
 import com.weareadaptive.auction.model.Bid;
@@ -29,7 +29,7 @@ public class AuctionLotService {
     AuctionLot auctionLot = new AuctionLot(
         auctionState.nextId(),
         userRepository.getByUsername(username)
-          .orElseThrow(() -> new KeyDoesNotExistException("User does not exist")),
+          .orElseThrow(() -> new ItemDoesNotExistException("User does not exist")),
         symbol,
         quantity,
         minPrice);
@@ -49,7 +49,7 @@ public class AuctionLotService {
     auctionState.get(id)
         .bid(
           userRepository.getByUsername(username)
-            .orElseThrow(() -> new KeyDoesNotExistException("User does not exist")),
+            .orElseThrow(() -> new ItemDoesNotExistException("User does not exist")),
           quantity,
           price
         );

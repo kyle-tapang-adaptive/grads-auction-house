@@ -6,6 +6,7 @@ import com.weareadaptive.auction.model.AuctionState;
 import com.weareadaptive.auction.model.Bid;
 import com.weareadaptive.auction.model.BusinessException;
 import com.weareadaptive.auction.model.ClosingSummary;
+import com.weareadaptive.auction.repository.UserRepository;
 import java.util.List;
 import java.util.stream.Stream;
 import org.springframework.stereotype.Service;
@@ -13,11 +14,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuctionLotService {
   private final AuctionState auctionState;
-  private final UserState userState;
+  private final UserRepository userRepository;
 
-  public AuctionLotService(AuctionState auctionState, UserState userState) {
+  public AuctionLotService(AuctionState auctionState, UserRepository userRepository) {
     this.auctionState = auctionState;
-    this.userState = userState;
+    this.userRepository = userRepository;
   }
 
   public AuctionLot createAuctionLot(
@@ -27,7 +28,7 @@ public class AuctionLotService {
       int quantity) {
     AuctionLot auctionLot = new AuctionLot(
         auctionState.nextId(),
-        userState.getByUsername(username)
+        userRepository.getByUsername(username)
           .orElseThrow(() -> new KeyDoesNotExistException("User does not exist")),
         symbol,
         quantity,
@@ -47,7 +48,7 @@ public class AuctionLotService {
   public Bid createBid(String username, int id, double price, int quantity) {
     auctionState.get(id)
         .bid(
-          userState.getByUsername(username)
+          userRepository.getByUsername(username)
             .orElseThrow(() -> new KeyDoesNotExistException("User does not exist")),
           quantity,
           price

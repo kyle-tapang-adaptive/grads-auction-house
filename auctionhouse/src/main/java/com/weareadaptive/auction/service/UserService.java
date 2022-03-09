@@ -15,37 +15,22 @@ public class UserService {
     this.userRepository = userRepository;
   }
 
-  public User create(String username, String password, String firstName, String lastName,
-                     String organisation) {
-    User user = new User();
-    user.setUsername(username);
-    user.setPassword(password);
-    user.setFirstName(firstName);
-    user.setLastName(lastName);
-    user.setOrganisation(organisation);
-    userRepository.save(user);
-    return user;
-  }
-
-  public Optional<User> validateUsernamePassword(String username, String password) {
-    return userRepository.validate(username, password);
-  }
-
   public User create(
       String username,
       String password,
       String firstName,
       String lastName,
       String organisation) {
-    User newUser = new User(
-        userRepository.nextId(),
-        username,
-        password,
-        firstName,
-        lastName,
-        organisation);
-    userRepository.add(newUser);
-    return newUser;
+
+    User user = new User();
+
+    user.setUsername(username);
+    user.setPassword(password);
+    user.setFirstName(firstName);
+    user.setLastName(lastName);
+    user.setOrganisation(organisation);
+
+    return userRepository.save(user);
   }
 
   public User get(int id) {
@@ -53,7 +38,7 @@ public class UserService {
   }
 
   public Stream<User> all() {
-    return userRepository.stream();
+    return userRepository.all();
   }
 
   public User update(
@@ -61,11 +46,14 @@ public class UserService {
       String firstName,
       String lastName,
       String organisation) {
+
     User user = userRepository.get(id);
+
     user.setFirstName(firstName);
     user.setLastName(lastName);
     user.setOrganisation(organisation);
-    return user;
+
+    return userRepository.save(user);
   }
 
   public void block(int id) {
@@ -74,5 +62,9 @@ public class UserService {
 
   public void unblock(int id) {
     userRepository.get(id).unblock();
+  }
+
+  public Optional<User> validateUsernamePassword(String username, String password) {
+    return userRepository.validateUsernamePassword(username, password);
   }
 }

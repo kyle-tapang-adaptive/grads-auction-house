@@ -1,6 +1,5 @@
 package com.weareadaptive.auction.model;
 
-
 import static org.apache.logging.log4j.util.Strings.isBlank;
 
 import javax.persistence.Entity;
@@ -20,6 +19,9 @@ public class User {
   private String lastName;
   private String organisation;
   private boolean blocked;
+
+  public User() {
+  }
 
   public User(
       int id,
@@ -64,9 +66,6 @@ public class User {
     this.isAdmin = isAdmin;
   }
 
-  public User() {
-  }
-
   @Override
   public String toString() {
     return "User{"
@@ -78,15 +77,10 @@ public class User {
     return username;
   }
 
-  public boolean validatePassword(String password) {
-    return this.password.equals(password);
-  }
-
   public String getFirstName() {
     return firstName;
   }
 
-  //TODO: Add validation
   public void setFirstName(String firstName) {
     this.firstName = firstName;
   }

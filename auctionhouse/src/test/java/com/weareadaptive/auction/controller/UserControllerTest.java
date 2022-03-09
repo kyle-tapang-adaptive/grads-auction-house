@@ -75,13 +75,11 @@ public class UserControllerTest extends IntegrationTest {
             .body(find1 + "firstName", equalTo(testData.user1().getFirstName()))
             .body(find1 + "lastName", equalTo(testData.user1().getLastName()))
             .body(find1 + "organisation", equalTo(testData.user1().getOrganisation()))
-            .body(find1 + "email", equalTo(testData.user1().getEmail()))
             // Validate User2
             .body(find2 + "username", equalTo(testData.user2().getUsername()))
             .body(find2 + "firstName", equalTo(testData.user2().getFirstName()))
             .body(find2 + "lastName", equalTo(testData.user2().getLastName()))
-            .body(find2 + "organisation", equalTo(testData.user2().getOrganisation()))
-            .body(find2 + "email", equalTo(testData.user2().getEmail()));
+            .body(find2 + "organisation", equalTo(testData.user2().getOrganisation()));
         //@formatter:on
   }
 

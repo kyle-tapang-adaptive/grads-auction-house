@@ -1,30 +1,30 @@
 package com.weareadaptive.auction.configuration;
 
 import com.weareadaptive.auction.model.User;
-import com.weareadaptive.auction.model.UserState;
+import com.weareadaptive.auction.repository.UserRepository;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ApplicationInit {
-  private final UserState userState;
+  private final UserRepository userRepository;
 
-  public ApplicationInit(UserState userState) {
-    this.userState = userState;
+  public ApplicationInit(UserRepository userRepository) {
+    this.userRepository = userService;
   }
 
   @EventListener(ApplicationReadyEvent.class)
   public void createInitData() {
     var admin = new User(
-        userState.nextId(),
+        userRepository.nextId(),
         "ADMIN",
         "adminpassword",
         "admin",
         "admin",
         "Adaptive",
         true);
-    userState.add(admin);
+    userRepository.add(admin);
   }
 
 }

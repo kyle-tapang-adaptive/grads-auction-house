@@ -38,13 +38,13 @@ public interface UserRepository extends JpaRepository<User, Integer> {
       @Param("lastName") String lastName,
       @Param("organisation") String organisation);
 
-  @Modifying(clearAutomatically = true)
+  @Modifying
   @Transactional
-  @Query("update AuctionUser u set u.blocked = true where u.id = :id")
-  void block(@Param("id") int id);
+  @Query("update AuctionUser u set u.blocked = true where u.id=?1")
+  void block(int id);
 
-  @Modifying(clearAutomatically = true)
+  @Modifying
   @Transactional
-  @Query("update AuctionUser u set u.blocked = false where u.id = :id")
-  void unblock(@Param("id") int id);
+  @Query("update AuctionUser u set u.blocked = false where u.id=?1")
+  void unblock(int id);
 }

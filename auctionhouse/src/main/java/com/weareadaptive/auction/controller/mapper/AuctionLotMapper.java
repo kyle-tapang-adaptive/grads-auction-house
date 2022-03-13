@@ -7,10 +7,10 @@ import com.weareadaptive.auction.model.AuctionLot;
 
 public class AuctionLotMapper {
   public static AuctionLotResponse map(AuctionLot auctionLot) {
-    if (auctionLot.getStatus() == AuctionLot.Status.OPENED) {
+    if (auctionLot.getStatus().equals(auctionLot.statusOpened())) {
       return new OpenAuctionLotResponse(
         auctionLot.getId(),
-        auctionLot.getOwner().getUsername(),
+        auctionLot.getOwner(),
         auctionLot.getSymbol(),
         auctionLot.getMinPrice(),
         auctionLot.getQuantity(),
@@ -19,12 +19,12 @@ public class AuctionLotMapper {
     }
     return new ClosedAuctionLotResponse(
       auctionLot.getId(),
-      auctionLot.getOwner().getUsername(),
+      auctionLot.getOwner(),
       auctionLot.getSymbol(),
       auctionLot.getMinPrice(),
       auctionLot.getQuantity(),
       auctionLot.getStatus(),
-      auctionLot.getClosingSummary().closingTime()
+      auctionLot.getClosingTime()
     );
   }
 }

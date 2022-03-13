@@ -1,14 +1,12 @@
 package com.weareadaptive.auction.controller.dto.auctions;
 
-import com.weareadaptive.auction.model.AuctionLot;
-
 public class AuctionLotResponse {
   private final int id;
   private final String owner;
   private final String symbol;
   private final double minPrice;
   private final int quantity;
-  private final AuctionLot.Status status;
+  private final String status;
 
   public AuctionLotResponse(
       int id,
@@ -16,7 +14,7 @@ public class AuctionLotResponse {
       String symbol,
       double minPrice,
       int quantity,
-      AuctionLot.Status status
+      String status
   ) {
     this.id = id;
     this.owner = owner;
@@ -46,7 +44,7 @@ public class AuctionLotResponse {
     return quantity;
   }
 
-  public AuctionLot.Status getStatus() {
+  public String getStatus() {
     return status;
   }
 }

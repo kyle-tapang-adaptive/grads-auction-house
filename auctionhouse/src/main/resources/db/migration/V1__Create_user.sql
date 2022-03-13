@@ -10,5 +10,29 @@ CREATE TABLE auction_user
     blocked      BOOLEAN            NOT NUll
 );
 
+CREATE TABLE auction_lot
+(
+    id                  SERIAL PRIMARY KEY,
+    owner               VARCHAR(50) NOT NULL,
+    symbol              VARCHAR(50) NOT NULL,
+    min_price           NUMERIC     NOT NULL,
+    quantity            INT         NOT NULL,
+    status              VARCHAR(50) NOT NULL,
+    total_sold_quantity INT,
+    total_revenue       NUMERIC,
+    closing_time        TIMESTAMP
+);
+
+CREATE TABLE bid
+(
+    id             SERIAL PRIMARY KEY,
+    auction_lot_id INT         NOT NULL,
+    username       VARCHAR(50) NOT NULL,
+    quantity       INT         NOT NULL,
+    price          NUMERIC     NOT NULL,
+    state          VARCHAR(50) NOT NULL,
+    win_quantity   INT
+);
+
 INSERT INTO auction_user (username, password, is_admin, first_name, last_name, organisation, blocked)
 VALUES ('ADMIN', 'adminpassword', TRUE, 'admin', 'admin', 'Adaptive', FALSE);

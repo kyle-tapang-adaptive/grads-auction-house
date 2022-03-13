@@ -18,7 +18,7 @@ import com.weareadaptive.auction.IntegrationTest;
 import com.weareadaptive.auction.TestData;
 import com.weareadaptive.auction.controller.dto.users.CreateUserRequest;
 import com.weareadaptive.auction.controller.dto.users.UpdateUserRequest;
-import com.weareadaptive.auction.repository.UserRepository;
+import com.weareadaptive.auction.service.UserService;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,8 +26,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
 public class UserControllerTest extends IntegrationTest {
+
   @Autowired
-  private UserRepository userRepository;
+  private UserService userService;
   public static final int INVALID_USER_ID = 99999;
   private final Faker faker = new Faker();
 
@@ -200,7 +201,7 @@ public class UserControllerTest extends IntegrationTest {
       .statusCode(NO_CONTENT.value());
     //@formatter:on
 
-    var sameUserFromRepo = userRepository.get(user.getId()).get();
+    var sameUserFromRepo = userService.get(user.getId());
 
     assertThat(sameUserFromRepo.isBlocked(), equalTo(true));
   }
@@ -222,7 +223,7 @@ public class UserControllerTest extends IntegrationTest {
       .statusCode(NO_CONTENT.value());
     //@formatter:on
 
-    var sameUserFromRepo = userRepository.get(user.getId()).get();
+    var sameUserFromRepo = userService.get(user.getId());
 
     assertThat(sameUserFromRepo.isBlocked(), equalTo(false));
   }

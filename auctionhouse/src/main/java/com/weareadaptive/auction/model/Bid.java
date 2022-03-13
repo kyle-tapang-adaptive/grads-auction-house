@@ -1,61 +1,90 @@
 package com.weareadaptive.auction.model;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+@Entity(name = "Bid")
 public class Bid {
-  private final User user;
-  private final int quantity;
-  private final double price;
-  private State state;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private int id;
+  private int auctionLotId;
+  private String username;
+  private int quantity;
+  private double price;
+  private String state;
   private int winQuantity;
 
-  public Bid(User user, int quantity, double price) {
-    if (user == null) {
-      throw new BusinessException("user cannot be null");
-    }
+  public Bid() {}
 
-    if (price <= 0) {
-      throw new BusinessException("price must be above 0");
-    }
+  public int getId() {
+    return id;
+  }
 
-    if (quantity <= 0) {
-      throw new BusinessException("quantity must be above 0");
-    }
+  public void setId(int id) {
+    this.id = id;
+  }
 
-    this.price = price;
-    this.user = user;
-    this.quantity = quantity;
-    state = State.PENDING;
+  public int getAuctionLotId() {
+    return auctionLotId;
+  }
+
+  public void setAuctionLotId(int auctionLotId) {
+    this.auctionLotId = auctionLotId;
+  }
+
+  public String getUsername() {
+    return username;
+  }
+
+  public void setUsername(String user) {
+    this.username = user;
   }
 
   public int getQuantity() {
     return quantity;
   }
 
-  public User getUser() {
-    return user;
+  public void setQuantity(int quantity) {
+    this.quantity = quantity;
   }
 
   public double getPrice() {
     return price;
   }
 
+  public void setPrice(double price) {
+    this.price = price;
+  }
+
+  public String getState() {
+    return state;
+  }
+
+  public void setState(String state) {
+    this.state = state;
+  }
+
   public int getWinQuantity() {
     return winQuantity;
   }
 
-  public State getState() {
-    return state;
+  public void setWinQuantity(int winQuantity) {
+    this.winQuantity = winQuantity;
   }
 
   public void lost() {
-    if (state != State.PENDING) {
+    if (!state.equals(statePending())) {
       throw new BusinessException("Must be a pending bid");
     }
 
-    state = State.LOST;
+    state = stateLost();
   }
 
   public void win(int winQuantity) {
-    if (state != State.PENDING) {
+    if (!state.equals(statePending())) {
       throw new BusinessException("Must be a pending bid");
     }
 
@@ -63,22 +92,28 @@ public class Bid {
       throw new BusinessException("winQuantity must be lower or equal to to the bid quantity");
     }
 
-    state = State.WIN;
+    state = stateWin();
     this.winQuantity = winQuantity;
   }
 
   @Override
   public String toString() {
     return "Bid{"
-      + "user=" + user
+      + "user=" + username
       + ", price=" + price
       + ", quantity=" + quantity
       + '}';
   }
 
-  public enum State {
-    PENDING,
-    LOST,
-    WIN
+  public String statePending() {
+    return "PENDING";
+  }
+
+  public String stateWin() {
+    return "WIN";
+  }
+
+  public String stateLost() {
+    return "LOST";
   }
 }

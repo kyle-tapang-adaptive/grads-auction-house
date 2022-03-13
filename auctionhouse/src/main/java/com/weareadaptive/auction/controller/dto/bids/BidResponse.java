@@ -1,14 +1,12 @@
 package com.weareadaptive.auction.controller.dto.bids;
 
-import com.weareadaptive.auction.model.Bid;
-
 public class BidResponse {
   private final String username;
   private final int quantity;
   private final double price;
-  private final Bid.State state;
+  private final String state;
 
-  public BidResponse(String username, int quantity, double price, Bid.State state) {
+  public BidResponse(String username, int quantity, double price, String state) {
     this.username = username;
     this.quantity = quantity;
     this.price = price;
@@ -27,7 +25,7 @@ public class BidResponse {
     return price;
   }
 
-  public Bid.State getState() {
+  public String getState() {
     return state;
   }
 }

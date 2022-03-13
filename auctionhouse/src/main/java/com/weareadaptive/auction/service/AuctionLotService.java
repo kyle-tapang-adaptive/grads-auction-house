@@ -1,24 +1,42 @@
 package com.weareadaptive.auction.service;
 
+import static java.lang.Math.min;
+import static java.lang.String.format;
+import static java.math.BigDecimal.valueOf;
+import static java.util.Collections.reverseOrder;
+import static java.util.Collections.unmodifiableList;
+import static java.util.Comparator.comparing;
+import static java.util.Comparator.comparingInt;
+
 import com.weareadaptive.auction.exception.ItemDoesNotExistException;
 import com.weareadaptive.auction.model.AuctionLot;
-import com.weareadaptive.auction.model.AuctionState;
 import com.weareadaptive.auction.model.Bid;
 import com.weareadaptive.auction.model.BusinessException;
 import com.weareadaptive.auction.model.ClosingSummary;
+import com.weareadaptive.auction.model.WinningBid;
+import com.weareadaptive.auction.repository.AuctionLotRepository;
+import com.weareadaptive.auction.repository.BidRepository;
 import com.weareadaptive.auction.repository.UserRepository;
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AuctionLotService {
-  private final AuctionState auctionState;
+  private final AuctionLotRepository auctionLotRepository;
   private final UserRepository userRepository;
+  private final BidRepository bidRepository;
 
-  public AuctionLotService(AuctionState auctionState, UserRepository userRepository) {
-    this.auctionState = auctionState;
+  public AuctionLotService(
+      AuctionLotRepository  auctionLotRepository,
+      UserRepository userRepository,
+      BidRepository bidRepository) {
+    this.auctionLotRepository = auctionLotRepository;
     this.userRepository = userRepository;
+    this.bidRepository = bidRepository;
   }
 
   public AuctionLot createAuctionLot(
@@ -26,66 +44,138 @@ public class AuctionLotService {
       String symbol,
       double minPrice,
       int quantity) {
-    AuctionLot auctionLot = new AuctionLot(
-        auctionState.nextId(),
-        userRepository.getByUsername(username)
-          .orElseThrow(() -> new ItemDoesNotExistException("User does not exist")),
-        symbol,
-        quantity,
-        minPrice);
-    auctionState.add(auctionLot);
-    return auctionLot;
+    String owner = userRepository.getByUsername(username)
+        .orElseThrow(() -> new ItemDoesNotExistException("User does not exist"))
+        .getUsername();
+
+    AuctionLot auctionLot = new AuctionLot();
+    auctionLot.setOwner(owner);
+    auctionLot.setSymbol(symbol);
+    auctionLot.setQuantity(quantity);
+    auctionLot.setMinPrice(minPrice);
+    auctionLot.setStatus(auctionLot.statusOpened());
+    auctionLot.setTimeProvider(Instant::now);
+
+    return auctionLotRepository.save(auctionLot);
   }
 
   public AuctionLot getAuctionLot(int id) {
-    return auctionState.get(id);
+    return auctionLotRepository.get(id)
+      .orElseThrow(() -> new ItemDoesNotExistException("Auction does not exist."));
   }
 
   public Stream<AuctionLot> getAllAuctionLots() {
-    return auctionState.stream();
+    return auctionLotRepository.all().stream();
   }
 
   public Bid createBid(String username, int id, double price, int quantity) {
-    auctionState.get(id)
-        .bid(
-          userRepository.getByUsername(username)
-            .orElseThrow(() -> new ItemDoesNotExistException("User does not exist")),
-          quantity,
-          price
-        );
-    int lastBid = auctionState.get(id)
-        .getBids()
-        .size() - 1;
-    return auctionState.get(id)
-      .getBids()
-      .get(lastBid);
+    final String user = userRepository.getByUsername(username)
+        .orElseThrow(() -> new ItemDoesNotExistException("User does not exist"))
+        .getUsername();
+
+    AuctionLot auctionLot = auctionLotRepository.get(id)
+        .orElseThrow(() -> new ItemDoesNotExistException("Auction does not exist."));
+
+    if (auctionLot.getStatus().equals(auctionLot.statusClosed())) {
+      throw new BusinessException("Cannot close an already closed.");
+    }
+
+    if (username.equals(auctionLot.getOwner())) {
+      throw new BusinessException("User cannot bid on his own auctions");
+    }
+
+    if (price < auctionLot.getMinPrice()) {
+      throw new BusinessException(format("price needs to be above %s", auctionLot.getMinPrice()));
+    }
+
+    Bid bid = new Bid();
+    bid.setAuctionLotId(id);
+    bid.setUsername(user);
+    bid.setPrice(price);
+    bid.setQuantity(quantity);
+    bid.setState("PENDING");
+
+    return bidRepository.save(bid);
   }
 
   public List<Bid> getBids(String username, int id) {
-    if (!auctionState.get(id)
+    if (!getAuctionLot(id)
         .getOwner()
-        .getUsername()
         .equals(username)) {
       throw new BusinessException("User is not the owner of AuctionLot " + id);
     }
-    return auctionState.get(id)
-      .getBids();
+    return bidRepository.findBidsByAuctionLotId(id);
   }
 
   public ClosingSummary close(String username, int id) {
-    if (!auctionState.get(id)
+    AuctionLot auctionLot = getAuctionLot(id);
+    if (!auctionLot
         .getOwner()
-        .getUsername()
         .equals(username)) {
       throw new BusinessException("User is not the owner of AuctionLot " + id);
     }
-    auctionState.get(id).close();
-    return auctionState.get(id)
-      .getClosingSummary();
+
+    if (auctionLot.getStatus().equals(auctionLot.statusClosed())) {
+      throw new BusinessException("Cannot close because already closed.");
+    }
+
+    var orderedBids = bidRepository.findBidsByAuctionLotId(id)
+        .stream()
+        .sorted(reverseOrder(comparing(Bid::getPrice))
+        .thenComparing(reverseOrder(comparingInt(Bid::getQuantity))))
+        .toList();
+    var availableQuantity = auctionLot.getQuantity();
+    var revenue = BigDecimal.ZERO;
+    var winningBids = new ArrayList<WinningBid>();
+
+    for (Bid bid : orderedBids) {
+      if (availableQuantity > 0) {
+        var bidQuantity = min(availableQuantity, bid.getQuantity());
+
+        winningBids.add(new WinningBid(bidQuantity, bid));
+        bid.win(bidQuantity);
+        availableQuantity -= bidQuantity;
+        revenue = revenue.add(valueOf(bidQuantity).multiply(valueOf(bid.getPrice())));
+      } else {
+        bid.lost();
+      }
+
+      bidRepository.save(bid);
+    }
+
+    int totalSoldQuantity = auctionLot.getQuantity() - availableQuantity;
+    Instant closingTime = Instant.now();
+
+    //TODO: Update status
+    auctionLotRepository.close(
+        id,
+        totalSoldQuantity,
+        revenue,
+        closingTime);
+
+    return new ClosingSummary(
+      unmodifiableList(winningBids),
+      totalSoldQuantity,
+      revenue,
+      closingTime);
   }
 
   public ClosingSummary getClosingSummary(int id) {
-    return auctionState.get(id)
-      .getClosingSummary();
+    AuctionLot auctionLot = getAuctionLot(id);
+
+    if (auctionLot.getStatus().equals(auctionLot.statusClosed())) {
+      throw new BusinessException("Cannot close because already closed.");
+    }
+
+    List<WinningBid> winningBids = bidRepository.getWinningBidsByAuctionLotId(id)
+        .stream()
+        .map(bid -> new WinningBid(bid.getWinQuantity(), bid))
+        .toList();
+
+    return new ClosingSummary(
+      winningBids,
+      auctionLot.getTotalSoldQuantity(),
+      auctionLot.getTotalRevenue(),
+      auctionLot.getClosingTime());
   }
 }

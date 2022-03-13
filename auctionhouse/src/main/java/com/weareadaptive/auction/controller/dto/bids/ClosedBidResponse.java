@@ -1,7 +1,5 @@
 package com.weareadaptive.auction.controller.dto.bids;
 
-import com.weareadaptive.auction.model.Bid;
-
 public class ClosedBidResponse extends BidResponse {
   private final int winQuantity;
 
@@ -9,7 +7,7 @@ public class ClosedBidResponse extends BidResponse {
       String username,
       int quantity,
       double price,
-      Bid.State state,
+      String state,
       int winQuantity) {
     super(username, quantity, price, state);
     this.winQuantity = winQuantity;

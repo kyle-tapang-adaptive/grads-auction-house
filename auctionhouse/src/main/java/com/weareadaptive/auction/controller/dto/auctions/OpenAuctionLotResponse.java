@@ -1,8 +1,5 @@
 package com.weareadaptive.auction.controller.dto.auctions;
 
-import com.weareadaptive.auction.controller.dto.auctions.AuctionLotResponse;
-import com.weareadaptive.auction.model.AuctionLot;
-
 public class OpenAuctionLotResponse extends AuctionLotResponse {
   public OpenAuctionLotResponse(
       int id,
@@ -10,7 +7,7 @@ public class OpenAuctionLotResponse extends AuctionLotResponse {
       String symbol,
       double minPrice,
       int quantity,
-      AuctionLot.Status status) {
+      String status) {
     super(id, owner, symbol, minPrice, quantity, status);
   }
 }

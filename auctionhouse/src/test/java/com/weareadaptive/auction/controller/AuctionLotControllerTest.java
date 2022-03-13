@@ -9,6 +9,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 import com.github.javafaker.Faker;
+import com.weareadaptive.auction.IntegrationTest;
 import com.weareadaptive.auction.TestData;
 import com.weareadaptive.auction.controller.dto.auctions.CreateAuctionLotRequest;
 import com.weareadaptive.auction.controller.dto.bids.CreateBidRequest;
@@ -28,7 +29,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class AuctionLotControllerTest {
+public class AuctionLotControllerTest extends IntegrationTest {
   public static final int INVALID_AUCTION_ID = 99999;
 
   @Autowired
@@ -74,7 +75,7 @@ public class AuctionLotControllerTest {
       .body("symbol", equalTo(createRequest.symbol()))
       .body("minPrice", equalTo((float) createRequest.minPrice()))
       .body("quantity", equalTo(createRequest.quantity()))
-      .body("status", equalTo(AuctionLot.Status.OPENED.toString()));
+      .body("status", equalTo(testAuctionLot.statusOpened()));
     //@formatter:on
   }
 
@@ -125,7 +126,7 @@ public class AuctionLotControllerTest {
     User testUser = testData.user1();
     var find1 = format("find { it.id == %s }.", testData.auctionLot1().getId());
     var find2 = format("find { it.id == %s }.", testData.auctionLot2().getId());
-    testData.auctionLot2().close();
+    auctionLotService.close(testData.user1().getUsername(), testData.auctionLot2().getId());
 
     //@formatter:off
     given()
@@ -137,14 +138,14 @@ public class AuctionLotControllerTest {
       .statusCode(HttpStatus.OK.value())
       // Validate Auction1
       .body(find1 + "id", greaterThanOrEqualTo(testData.auctionLot1().getId()))
-      .body(find1 + "owner", equalTo(testData.auctionLot1().getOwner().getUsername()))
+      .body(find1 + "owner", equalTo(testData.auctionLot1().getOwner()))
       .body(find1 + "symbol", equalTo(testData.auctionLot1().getSymbol()))
       .body(find1 + "minPrice", equalTo((float) testData.auctionLot1().getMinPrice()))
       .body(find1 + "quantity", equalTo(testData.auctionLot1().getQuantity()))
       .body(find1 + "status", equalTo(testData.auctionLot1().getStatus().toString()))
       // Validate Auction2
       .body(find2 + "id", greaterThanOrEqualTo(testData.auctionLot2().getId()))
-      .body(find2 + "owner", equalTo(testData.auctionLot2().getOwner().getUsername()))
+      .body(find2 + "owner", equalTo(testData.auctionLot2().getOwner()))
       .body(find2 + "symbol", equalTo(testData.auctionLot2().getSymbol()))
       .body(find2 + "minPrice", equalTo((float) testData.auctionLot2().getMinPrice()))
       .body(find2 + "quantity", equalTo(testData.auctionLot2().getQuantity()))
@@ -155,6 +156,7 @@ public class AuctionLotControllerTest {
   @DisplayName("create should create and return the new bid")
   @Test
   public void shouldReturnBidIfCreated() {
+    Bid bid = new Bid();
     User testUser = testData.user2();
     AuctionLot testAuctionLot = testData.auctionLot1();
     CreateBidRequest createBidRequest = new CreateBidRequest(
@@ -176,13 +178,14 @@ public class AuctionLotControllerTest {
       .body("username", equalTo(testUser.getUsername()))
       .body("quantity", equalTo(createBidRequest.quantity()))
       .body("price", equalTo((float) createBidRequest.price()))
-      .body("state", equalTo(Bid.State.PENDING.toString()));
+      .body("state", equalTo(bid.statePending()));
     //@formatter:on
   }
 
   @DisplayName("get should return all the bids for an auction")
   @Test
   public void shouldReturnAllBidsOfAnAuction() {
+    Bid bid = new Bid();
     User testUser2 = testData.user2();
     User testUser3 = testData.user3();
     AuctionLot testAuctionLot = testData.auctionLot1();
@@ -190,8 +193,8 @@ public class AuctionLotControllerTest {
     var find1 = format("find { it.username == '%s' }.", testUser2.getUsername());
     var find2 = format("find { it.username == '%s' }.", testUser3.getUsername());
 
-    testAuctionLot.bid(testUser2, testAuctionLot.getQuantity(), testAuctionLot.getMinPrice());
-    testAuctionLot.bid(testUser3, testAuctionLot.getQuantity(), testAuctionLot.getMinPrice());
+    auctionLotService.createBid(testUser2.getUsername(), testAuctionLot.getId(), testAuctionLot.getMinPrice(), testAuctionLot.getQuantity());
+    auctionLotService.createBid(testUser3.getUsername(), testAuctionLot.getId(), testAuctionLot.getMinPrice(), testAuctionLot.getQuantity());
 
     given()
       .baseUri(uri)
@@ -204,11 +207,11 @@ public class AuctionLotControllerTest {
       .body(find1 + "username", equalTo(testUser2.getUsername()))
       .body(find1 + "quantity", equalTo(testAuctionLot.getQuantity()))
       .body(find1 + "price", equalTo((float) testAuctionLot.getMinPrice()))
-      .body(find1 + "state", equalTo(Bid.State.PENDING.toString()))
+      .body(find1 + "state", equalTo(bid.statePending()))
       .body(find2 + "username", equalTo(testUser3.getUsername()))
       .body(find2 + "quantity", equalTo(testAuctionLot.getQuantity()))
       .body(find2 + "price", equalTo((float) testAuctionLot.getMinPrice()))
-      .body(find2 + "state", equalTo(Bid.State.PENDING.toString()));
+      .body(find2 + "state", equalTo(bid.statePending()));
   }
 
   @DisplayName("put should return closing summary when closing an auctionLot")
@@ -222,8 +225,8 @@ public class AuctionLotControllerTest {
     BigDecimal revenue = BigDecimal.ZERO;
     revenue = revenue.add(valueOf(winningPrice).multiply(valueOf(testAuctionLot.getQuantity())));
 
-    testAuctionLot.bid(testUser2, testAuctionLot.getQuantity(), testAuctionLot.getMinPrice());
-    testAuctionLot.bid(testUser3, testAuctionLot.getQuantity(), winningPrice);
+    auctionLotService.createBid(testUser2.getUsername(), testAuctionLot.getId(), testAuctionLot.getMinPrice(), testAuctionLot.getQuantity());
+    auctionLotService.createBid(testUser3.getUsername(), testAuctionLot.getId(), winningPrice, testAuctionLot.getQuantity());
 
     var find1 = format("winBids.find { it.username == '%s' }.", testUser3.getUsername());
 
@@ -255,12 +258,12 @@ public class AuctionLotControllerTest {
     BigDecimal revenue = BigDecimal.ZERO;
     revenue = revenue.add(valueOf(winningPrice).multiply(valueOf(testAuctionLot.getQuantity())));
 
-    testAuctionLot.bid(testUser2, testAuctionLot.getQuantity(), testAuctionLot.getMinPrice());
-    testAuctionLot.bid(testUser3, testAuctionLot.getQuantity(), winningPrice);
+    auctionLotService.createBid(testUser2.getUsername(), testAuctionLot.getId(), testAuctionLot.getMinPrice(), testAuctionLot.getQuantity());
+    auctionLotService.createBid(testUser3.getUsername(), testAuctionLot.getId(), winningPrice, testAuctionLot.getQuantity());
 
     var find1 = format("winBids.find { it.username == '%s' }.", testUser3.getUsername());
 
-    auctionLotService.getAuctionLot(testAuctionLot.getId()).close();
+    auctionLotService.close(testData.user1().getUsername(), testAuctionLot.getId());
 
     given()
       .baseUri(uri)

@@ -8,9 +8,12 @@ import com.weareadaptive.auction.model.WinningBid;
 
 public class BidMapper {
   public static BidResponse map(Bid bid) {
-    if (bid.getState() == Bid.State.PENDING) {
+    if (bid.getState()
+        .equals(
+        bid.statePending()
+        )) {
       return new OpenBidResponse(
-        bid.getUser().getUsername(),
+        bid.getUsername(),
         bid.getQuantity(),
         bid.getPrice(),
         bid.getState()
@@ -18,7 +21,7 @@ public class BidMapper {
     }
 
     return new ClosedBidResponse(
-      bid.getUser().getUsername(),
+      bid.getUsername(),
       bid.getQuantity(),
       bid.getPrice(),
       bid.getState(),
@@ -29,7 +32,7 @@ public class BidMapper {
   public static BidResponse map(WinningBid winningBid) {
     Bid bid = winningBid.originalBid();
     return new ClosedBidResponse(
-      bid.getUser().getUsername(),
+      bid.getUsername(),
       bid.getQuantity(),
       bid.getPrice(),
       bid.getState(),

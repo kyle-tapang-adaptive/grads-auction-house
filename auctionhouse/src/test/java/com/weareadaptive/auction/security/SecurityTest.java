@@ -34,7 +34,7 @@ public class SecurityTest {
     .when()
       .get("/test")
     .then()
-      .statusCode(HttpStatus.UNAUTHORIZED.value());
+        .statusCode(HttpStatus.UNAUTHORIZED.value());
     //@formatter:on
   }
 
@@ -48,7 +48,7 @@ public class SecurityTest {
       .get("/test")
     .then()
       .statusCode(HttpStatus.OK.value())
-      .body(equalTo("houra"));
+        .body(equalTo("houra"));
     //@formatter:on
   }
 
@@ -64,7 +64,7 @@ public class SecurityTest {
     .when()
       .get("/test")
     .then()
-      .statusCode(HttpStatus.UNAUTHORIZED.value());
+        .statusCode(HttpStatus.UNAUTHORIZED.value());
     //@formatter:on
   }
 
@@ -78,7 +78,7 @@ public class SecurityTest {
       .get("/test/adminOnly")
     .then()
       .statusCode(HttpStatus.OK.value())
-      .body(equalTo("super"));
+        .body(equalTo("super"));
     //@formatter:on
   }
 
@@ -91,7 +91,7 @@ public class SecurityTest {
     .when()
       .get("/test/adminOnly")
     .then()
-      .statusCode(HttpStatus.FORBIDDEN.value());
+        .statusCode(HttpStatus.FORBIDDEN.value());
     //@formatter:on
   }
 }

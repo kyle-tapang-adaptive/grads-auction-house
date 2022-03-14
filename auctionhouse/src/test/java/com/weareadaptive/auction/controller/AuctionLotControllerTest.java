@@ -49,7 +49,7 @@ public class AuctionLotControllerTest extends IntegrationTest {
     User testUser = testData.user1();
     AuctionLot testAuctionLot = testData.auctionLot1();
     var createRequest =
-      new CreateAuctionLotRequest(
+        new CreateAuctionLotRequest(
         testAuctionLot.getSymbol(),
         testAuctionLot.getMinPrice(),
         testAuctionLot.getQuantity()
@@ -70,7 +70,7 @@ public class AuctionLotControllerTest extends IntegrationTest {
       .body("symbol", equalTo(createRequest.symbol()))
       .body("minPrice", equalTo((float) createRequest.minPrice()))
       .body("quantity", equalTo(createRequest.quantity()))
-      .body("status", equalTo(testAuctionLot.statusOpened()));
+        .body("status", equalTo(testAuctionLot.statusOpened()));
     //@formatter:on
   }
 
@@ -94,7 +94,7 @@ public class AuctionLotControllerTest extends IntegrationTest {
       .body("symbol", equalTo(testAuctionLot.getSymbol()))
       .body("minPrice", equalTo((float) testAuctionLot.getMinPrice()))
       .body("quantity", equalTo(testAuctionLot.getQuantity()))
-      .body("status", equalTo(testAuctionLot.getStatus()));
+        .body("status", equalTo(testAuctionLot.getStatus()));
     //@formatter:on
   }
 
@@ -111,7 +111,7 @@ public class AuctionLotControllerTest extends IntegrationTest {
       .when()
       .get("/auctions/{id}")
       .then()
-      .statusCode(NOT_FOUND.value());
+        .statusCode(NOT_FOUND.value());
     //@formatter:on
   }
 
@@ -144,7 +144,7 @@ public class AuctionLotControllerTest extends IntegrationTest {
       .body(find2 + "symbol", equalTo(testData.auctionLot2().getSymbol()))
       .body(find2 + "minPrice", equalTo((float) testData.auctionLot2().getMinPrice()))
       .body(find2 + "quantity", equalTo(testData.auctionLot2().getQuantity()))
-      .body(find2 + "status", equalTo(testData.auctionLot2().statusClosed()));
+        .body(find2 + "status", equalTo(testData.auctionLot2().statusClosed()));
     //@formatter:on
   }
 
@@ -155,8 +155,8 @@ public class AuctionLotControllerTest extends IntegrationTest {
     User testUser = testData.user2();
     AuctionLot testAuctionLot = testData.auctionLot1();
     CreateBidRequest createBidRequest = new CreateBidRequest(
-      testAuctionLot.getQuantity(),
-      testAuctionLot.getMinPrice()
+        testAuctionLot.getQuantity(),
+        testAuctionLot.getMinPrice()
     );
 
     //@formatter:off
@@ -173,7 +173,7 @@ public class AuctionLotControllerTest extends IntegrationTest {
       .body("username", equalTo(testUser.getUsername()))
       .body("quantity", equalTo(createBidRequest.quantity()))
       .body("price", equalTo((float) createBidRequest.price()))
-      .body("state", equalTo(bid.statePending()));
+        .body("state", equalTo(bid.statePending()));
     //@formatter:on
   }
 
@@ -188,8 +188,10 @@ public class AuctionLotControllerTest extends IntegrationTest {
     var find1 = format("find { it.username == '%s' }.", testUser2.getUsername());
     var find2 = format("find { it.username == '%s' }.", testUser3.getUsername());
 
-    auctionLotService.createBid(testUser2.getUsername(), testAuctionLot.getId(), testAuctionLot.getMinPrice(), testAuctionLot.getQuantity());
-    auctionLotService.createBid(testUser3.getUsername(), testAuctionLot.getId(), testAuctionLot.getMinPrice(), testAuctionLot.getQuantity());
+    auctionLotService.createBid(testUser2.getUsername(), testAuctionLot.getId(),
+        testAuctionLot.getMinPrice(), testAuctionLot.getQuantity());
+    auctionLotService.createBid(testUser3.getUsername(), testAuctionLot.getId(),
+        testAuctionLot.getMinPrice(), testAuctionLot.getQuantity());
 
     given()
       .baseUri(uri)
@@ -206,7 +208,7 @@ public class AuctionLotControllerTest extends IntegrationTest {
       .body(find2 + "username", equalTo(testUser3.getUsername()))
       .body(find2 + "quantity", equalTo(testAuctionLot.getQuantity()))
       .body(find2 + "price", equalTo((float) testAuctionLot.getMinPrice()))
-      .body(find2 + "state", equalTo(bid.statePending()));
+        .body(find2 + "state", equalTo(bid.statePending()));
   }
 
   @DisplayName("put should return closing summary when closing an auctionLot")
@@ -220,8 +222,10 @@ public class AuctionLotControllerTest extends IntegrationTest {
     BigDecimal revenue = BigDecimal.ZERO;
     revenue = revenue.add(valueOf(winningPrice).multiply(valueOf(testAuctionLot.getQuantity())));
 
-    auctionLotService.createBid(testUser2.getUsername(), testAuctionLot.getId(), testAuctionLot.getMinPrice(), testAuctionLot.getQuantity());
-    auctionLotService.createBid(testUser3.getUsername(), testAuctionLot.getId(), winningPrice, testAuctionLot.getQuantity());
+    auctionLotService.createBid(testUser2.getUsername(), testAuctionLot.getId(),
+        testAuctionLot.getMinPrice(), testAuctionLot.getQuantity());
+    auctionLotService.createBid(testUser3.getUsername(), testAuctionLot.getId(), winningPrice,
+        testAuctionLot.getQuantity());
 
     var find1 = format("winBids.find { it.username == '%s' }.", testUser3.getUsername());
 
@@ -238,7 +242,7 @@ public class AuctionLotControllerTest extends IntegrationTest {
       .body(find1 + "price", equalTo((float) winningPrice))
       .body(find1 + "state", equalTo("WIN"))
       .body("totalSoldQuantity", equalTo(testAuctionLot.getQuantity()))
-      .body("totalRevenue", equalTo(revenue.floatValue()));
+        .body("totalRevenue", equalTo(revenue.floatValue()));
     //closingTime
   }
 
@@ -253,8 +257,10 @@ public class AuctionLotControllerTest extends IntegrationTest {
     BigDecimal revenue = BigDecimal.ZERO;
     revenue = revenue.add(valueOf(winningPrice).multiply(valueOf(testAuctionLot.getQuantity())));
 
-    auctionLotService.createBid(testUser2.getUsername(), testAuctionLot.getId(), testAuctionLot.getMinPrice(), testAuctionLot.getQuantity());
-    auctionLotService.createBid(testUser3.getUsername(), testAuctionLot.getId(), winningPrice, testAuctionLot.getQuantity());
+    auctionLotService.createBid(testUser2.getUsername(), testAuctionLot.getId(),
+        testAuctionLot.getMinPrice(), testAuctionLot.getQuantity());
+    auctionLotService.createBid(testUser3.getUsername(), testAuctionLot.getId(), winningPrice,
+        testAuctionLot.getQuantity());
 
     var find1 = format("winBids.find { it.username == '%s' }.", testUser3.getUsername());
 
@@ -273,7 +279,7 @@ public class AuctionLotControllerTest extends IntegrationTest {
       .body(find1 + "price", equalTo((float) winningPrice))
       .body(find1 + "state", equalTo("WIN"))
       .body("totalSoldQuantity", equalTo(testAuctionLot.getQuantity()))
-      .body("totalRevenue", equalTo(revenue.floatValue()));
+        .body("totalRevenue", equalTo(revenue.floatValue()));
     //closingTime
   }
 }

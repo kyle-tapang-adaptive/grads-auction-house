@@ -5,12 +5,11 @@ import com.weareadaptive.auction.model.AuctionLot;
 import com.weareadaptive.auction.model.User;
 import com.weareadaptive.auction.service.AuctionLotService;
 import com.weareadaptive.auction.service.UserService;
+import java.util.Arrays;
+import java.util.Random;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-
-import java.util.Arrays;
-import java.util.Random;
 
 @Component
 public class TestData {

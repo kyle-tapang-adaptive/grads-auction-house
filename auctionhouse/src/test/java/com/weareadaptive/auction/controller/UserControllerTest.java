@@ -36,11 +36,11 @@ public class UserControllerTest extends IntegrationTest {
   @Test
   public void create_shouldReturnBadRequestIfUserExist() {
     var createRequest = new CreateUserRequest(
-      testData.user1().getUsername(),
-      "dasfasdf",
-      testData.user1().getFirstName(),
-      testData.user1().getFirstName(),
-      testData.user1().getOrganisation());
+        testData.user1().getUsername(),
+        "dasfasdf",
+        testData.user1().getFirstName(),
+        testData.user1().getFirstName(),
+        testData.user1().getOrganisation());
 
     //@formatter:off
     given()
@@ -52,7 +52,7 @@ public class UserControllerTest extends IntegrationTest {
       .post("/users")
       .then()
       .statusCode(BAD_REQUEST.value())
-      .body("message", containsString("already exist"));
+        .body("message", containsString("already exist"));
     //@formatter:on
   }
 
@@ -79,7 +79,7 @@ public class UserControllerTest extends IntegrationTest {
       .body(find2 + "username", equalTo(testData.user2().getUsername()))
       .body(find2 + "firstName", equalTo(testData.user2().getFirstName()))
       .body(find2 + "lastName", equalTo(testData.user2().getLastName()))
-      .body(find2 + "organisation", equalTo(testData.user2().getOrganisation()));
+        .body(find2 + "organisation", equalTo(testData.user2().getOrganisation()));
     //@formatter:on
   }
 
@@ -94,7 +94,7 @@ public class UserControllerTest extends IntegrationTest {
       .when()
       .get("/users/{id}")
       .then()
-      .statusCode(NOT_FOUND.value());
+        .statusCode(NOT_FOUND.value());
     //@formatter:on
   }
 
@@ -109,7 +109,7 @@ public class UserControllerTest extends IntegrationTest {
       .when()
       .get("/users/{id}")
       .then()
-      .statusCode(FORBIDDEN.value());
+        .statusCode(FORBIDDEN.value());
     //@formatter:on
   }
 
@@ -128,7 +128,7 @@ public class UserControllerTest extends IntegrationTest {
       .body("id", equalTo(testData.user1().getId()))
       .body("firstName", equalTo(testData.user1().getFirstName()))
       .body("lastName", equalTo(testData.user1().getLastName()))
-      .body("organisation", equalTo(testData.user1().getOrganisation()));
+        .body("organisation", equalTo(testData.user1().getOrganisation()));
     //@formatter:on
   }
 
@@ -137,7 +137,7 @@ public class UserControllerTest extends IntegrationTest {
   public void update_shouldReturnNotFoundWhenUpdatingNonExistingUser() {
     var name = faker.name();
     var updateRequest =
-      new UpdateUserRequest(
+        new UpdateUserRequest(
         name.firstName(),
         name.lastName(),
         faker.company().name());
@@ -152,7 +152,7 @@ public class UserControllerTest extends IntegrationTest {
       .when()
       .put("/users/{id}")
       .then()
-      .statusCode(NOT_FOUND.value());
+        .statusCode(NOT_FOUND.value());
     //@formatter:on
   }
 
@@ -162,7 +162,7 @@ public class UserControllerTest extends IntegrationTest {
     var newUser = testData.createRandomUser();
     var name = faker.name();
     var updateRequest =
-      new UpdateUserRequest(
+        new UpdateUserRequest(
         name.firstName(),
         name.lastName(),
         faker.company().name());
@@ -181,7 +181,7 @@ public class UserControllerTest extends IntegrationTest {
       .body("id", equalTo(newUser.getId()))
       .body("firstName", equalTo(updateRequest.firstName()))
       .body("lastName", equalTo(updateRequest.lastName()))
-      .body("organisation", equalTo(updateRequest.organisation()));
+        .body("organisation", equalTo(updateRequest.organisation()));
     //@formatter:on
   }
 
@@ -198,7 +198,7 @@ public class UserControllerTest extends IntegrationTest {
       .when()
       .put("/users/{id}/block")
       .then()
-      .statusCode(NO_CONTENT.value());
+        .statusCode(NO_CONTENT.value());
     //@formatter:on
 
     var sameUserFromRepo = userService.get(user.getId());
@@ -220,7 +220,7 @@ public class UserControllerTest extends IntegrationTest {
       .when()
       .put("/users/{id}/unblock")
       .then()
-      .statusCode(NO_CONTENT.value());
+        .statusCode(NO_CONTENT.value());
     //@formatter:on
 
     var sameUserFromRepo = userService.get(user.getId());
@@ -239,7 +239,7 @@ public class UserControllerTest extends IntegrationTest {
       .when()
       .put("/users/{id}/unblock")
       .then()
-      .statusCode(NOT_FOUND.value());
+        .statusCode(NOT_FOUND.value());
     //@formatter:on
   }
 
@@ -254,7 +254,7 @@ public class UserControllerTest extends IntegrationTest {
       .when()
       .put("/users/{id}/block")
       .then()
-      .statusCode(NOT_FOUND.value());
+        .statusCode(NOT_FOUND.value());
     //@formatter:on
   }
 
@@ -263,7 +263,7 @@ public class UserControllerTest extends IntegrationTest {
   public void shouldReturnUserIfCreated() {
     var name = faker.name();
     var createRequest =
-      new CreateUserRequest(
+        new CreateUserRequest(
         name.username(),
         TestData.PASSWORD,
         name.firstName(),
@@ -283,7 +283,7 @@ public class UserControllerTest extends IntegrationTest {
       .body("id", greaterThan(0))
       .body("firstName", equalTo(createRequest.firstName()))
       .body("lastName", equalTo(createRequest.lastName()))
-      .body("organisation", equalTo(createRequest.organisation()));
+        .body("organisation", equalTo(createRequest.organisation()));
     //@formatter:on
   }
 }

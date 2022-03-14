@@ -26,7 +26,8 @@ public interface AuctionLotRepository extends JpaRepository<AuctionLot, Integer>
   @Query("update AuctionLot a "
       + "set a.totalSoldQuantity = :totalSoldQuantity, "
       +     "a.totalRevenue = :totalRevenue, "
-      +     "a.closingTime = :closingTime "
+      +     "a.closingTime = :closingTime, "
+      +     "a.status = 'CLOSED'"
       + "where a.id = :id")
   void close(
       @Param("id") int id,

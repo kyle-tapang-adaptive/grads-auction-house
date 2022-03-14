@@ -2,19 +2,16 @@ package com.weareadaptive.auction.model;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.function.Supplier;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Transient;
 
 @Entity(name = "AuctionLot")
 public class AuctionLot {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int id;
-
   private String owner;
   private String symbol;
   private double minPrice;
@@ -23,9 +20,6 @@ public class AuctionLot {
   private int totalSoldQuantity;
   private BigDecimal totalRevenue;
   private Instant closingTime;
-
-  @Transient
-  private Supplier<Instant> timeProvider;
 
   public AuctionLot() {}
 
@@ -99,14 +93,6 @@ public class AuctionLot {
 
   public void setClosingTime(Instant closingTime) {
     this.closingTime = closingTime;
-  }
-
-  public Supplier<Instant> getTimeProvider() {
-    return timeProvider;
-  }
-
-  public void setTimeProvider(Supplier<Instant> timeProvider) {
-    this.timeProvider = timeProvider;
   }
 
   @Override

@@ -8,7 +8,6 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
-import com.github.javafaker.Faker;
 import com.weareadaptive.auction.IntegrationTest;
 import com.weareadaptive.auction.TestData;
 import com.weareadaptive.auction.controller.dto.auctions.CreateAuctionLotRequest;
@@ -17,7 +16,6 @@ import com.weareadaptive.auction.model.AuctionLot;
 import com.weareadaptive.auction.model.Bid;
 import com.weareadaptive.auction.model.User;
 import com.weareadaptive.auction.service.AuctionLotService;
-import com.weareadaptive.auction.service.UserService;
 import io.restassured.http.ContentType;
 import java.math.BigDecimal;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,13 +33,10 @@ public class AuctionLotControllerTest extends IntegrationTest {
   @Autowired
   private AuctionLotService auctionLotService;
   @Autowired
-  private UserService userService;
-  @Autowired
   private TestData testData;
   @LocalServerPort
   private int port;
   private String uri;
-  private final Faker faker = new Faker();
 
   @BeforeEach
   public void initialiseRestAssuredMockMvcStandalone() {
@@ -99,7 +94,7 @@ public class AuctionLotControllerTest extends IntegrationTest {
       .body("symbol", equalTo(testAuctionLot.getSymbol()))
       .body("minPrice", equalTo((float) testAuctionLot.getMinPrice()))
       .body("quantity", equalTo(testAuctionLot.getQuantity()))
-      .body("status", equalTo(testAuctionLot.getStatus().toString()));
+      .body("status", equalTo(testAuctionLot.getStatus()));
     //@formatter:on
   }
 
@@ -142,14 +137,14 @@ public class AuctionLotControllerTest extends IntegrationTest {
       .body(find1 + "symbol", equalTo(testData.auctionLot1().getSymbol()))
       .body(find1 + "minPrice", equalTo((float) testData.auctionLot1().getMinPrice()))
       .body(find1 + "quantity", equalTo(testData.auctionLot1().getQuantity()))
-      .body(find1 + "status", equalTo(testData.auctionLot1().getStatus().toString()))
+      .body(find1 + "status", equalTo(testData.auctionLot1().getStatus()))
       // Validate Auction2
       .body(find2 + "id", greaterThanOrEqualTo(testData.auctionLot2().getId()))
       .body(find2 + "owner", equalTo(testData.auctionLot2().getOwner()))
       .body(find2 + "symbol", equalTo(testData.auctionLot2().getSymbol()))
       .body(find2 + "minPrice", equalTo((float) testData.auctionLot2().getMinPrice()))
       .body(find2 + "quantity", equalTo(testData.auctionLot2().getQuantity()))
-      .body(find2 + "status", equalTo(testData.auctionLot2().getStatus().toString()));
+      .body(find2 + "status", equalTo(testData.auctionLot2().statusClosed()));
     //@formatter:on
   }
 

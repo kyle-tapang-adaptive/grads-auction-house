@@ -1,7 +1,5 @@
 package com.weareadaptive.auction.model;
 
-import static org.apache.logging.log4j.util.Strings.isBlank;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -20,51 +18,7 @@ public class User {
   private String organisation;
   private boolean blocked;
 
-  public User() {
-  }
-
-  public User(
-      int id,
-      String username,
-      String password,
-      String firstName,
-      String lastName,
-      String organisation) {
-    this(id, username, password, firstName, lastName, organisation, false);
-  }
-
-  public User(
-      int id,
-      String username,
-      String password,
-      String firstName,
-      String lastName,
-      String organisation,
-      boolean isAdmin) {
-    if (isBlank(username)) {
-      throw new BusinessException("username cannot be null or empty");
-    }
-    if (isBlank(password)) {
-      throw new BusinessException("password cannot be null or empty");
-    }
-    if (isBlank(firstName)) {
-      throw new BusinessException("firstName cannot be null or empty");
-    }
-    if (isBlank(lastName)) {
-      throw new BusinessException("lastName cannot be null or empty");
-    }
-    if (isBlank(organisation)) {
-      throw new BusinessException("organisation cannot be null or empty");
-    }
-    //TODO: Add regex for email
-    this.id = id;
-    this.username = username;
-    this.password = password;
-    this.firstName = firstName;
-    this.lastName = lastName;
-    this.organisation = organisation;
-    this.isAdmin = isAdmin;
-  }
+  public User() {}
 
   @Override
   public String toString() {

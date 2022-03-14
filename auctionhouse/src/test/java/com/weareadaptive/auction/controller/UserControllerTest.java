@@ -210,7 +210,7 @@ public class UserControllerTest extends IntegrationTest {
   @Test
   public void shouldUnlockUser() {
     var user = testData.createRandomUser();
-    user.block();
+    userService.block(user.getId());
 
     //@formatter:off
     given()

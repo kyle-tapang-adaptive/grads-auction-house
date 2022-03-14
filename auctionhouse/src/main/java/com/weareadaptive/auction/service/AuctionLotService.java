@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AuctionLotService {
+
   private final AuctionLotRepository auctionLotRepository;
   private final UserRepository userRepository;
   private final BidRepository bidRepository;
@@ -54,7 +55,6 @@ public class AuctionLotService {
     auctionLot.setQuantity(quantity);
     auctionLot.setMinPrice(minPrice);
     auctionLot.setStatus(auctionLot.statusOpened());
-    auctionLot.setTimeProvider(Instant::now);
 
     return auctionLotRepository.save(auctionLot);
   }
@@ -70,22 +70,24 @@ public class AuctionLotService {
 
   public Bid createBid(String username, int id, double price, int quantity) {
     final String user = userRepository.getByUsername(username)
-        .orElseThrow(() -> new ItemDoesNotExistException("User does not exist"))
-        .getUsername();
+          .orElseThrow(() -> new ItemDoesNotExistException("User does not exist"))
+          .getUsername();
 
-    AuctionLot auctionLot = auctionLotRepository.get(id)
-        .orElseThrow(() -> new ItemDoesNotExistException("Auction does not exist."));
+    AuctionLot auctionLot = getAuctionLot(id);
 
-    if (auctionLot.getStatus().equals(auctionLot.statusClosed())) {
-      throw new BusinessException("Cannot close an already closed.");
+    if (auctionLot
+        .getStatus()
+        .equals(auctionLot.statusClosed())) {
+      throw new BusinessException("Cannot bid on a closed auction");
     }
 
-    if (username.equals(auctionLot.getOwner())) {
-      throw new BusinessException("User cannot bid on his own auctions");
+    if (username
+        .equals(auctionLot.getOwner())) {
+      throw new BusinessException("User cannot bid on his own auction");
     }
 
     if (price < auctionLot.getMinPrice()) {
-      throw new BusinessException(format("price needs to be above %s", auctionLot.getMinPrice()));
+      throw new BusinessException(format("Price needs to be above %s", auctionLot.getMinPrice()));
     }
 
     Bid bid = new Bid();
@@ -115,7 +117,9 @@ public class AuctionLotService {
       throw new BusinessException("User is not the owner of AuctionLot " + id);
     }
 
-    if (auctionLot.getStatus().equals(auctionLot.statusClosed())) {
+    if (auctionLot
+        .getStatus()
+        .equals(auctionLot.statusClosed())) {
       throw new BusinessException("Cannot close because already closed.");
     }
 
@@ -146,7 +150,6 @@ public class AuctionLotService {
     int totalSoldQuantity = auctionLot.getQuantity() - availableQuantity;
     Instant closingTime = Instant.now();
 
-    //TODO: Update status
     auctionLotRepository.close(
         id,
         totalSoldQuantity,
@@ -163,8 +166,10 @@ public class AuctionLotService {
   public ClosingSummary getClosingSummary(int id) {
     AuctionLot auctionLot = getAuctionLot(id);
 
-    if (auctionLot.getStatus().equals(auctionLot.statusClosed())) {
-      throw new BusinessException("Cannot close because already closed.");
+    if (auctionLot
+        .getStatus()
+        .equals(auctionLot.statusOpened())) {
+      throw new BusinessException("Auction is not closed.");
     }
 
     List<WinningBid> winningBids = bidRepository.getWinningBidsByAuctionLotId(id)

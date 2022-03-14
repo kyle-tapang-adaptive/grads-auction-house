@@ -26,11 +26,10 @@ public class UserService {
 
     userRepository.getByUsername(username)
         .ifPresent(u -> {
-          throw new BusinessException("Item already exists");
+          throw new BusinessException("User already exists");
         });
 
     User user = new User();
-
     user.setUsername(username);
     user.setPassword(password);
     user.setFirstName(firstName);
@@ -60,12 +59,18 @@ public class UserService {
   }
 
   public void block(int id) {
-    get(id); //Checks if user exists, else throws
+    User user = get(id);
+    if (user.isBlocked()) {
+      throw new BusinessException("User is already blocked");
+    }
     userRepository.block(id);
   }
 
   public void unblock(int id) {
-    get(id); //Checks if user exists, else throws
+    User user = get(id);
+    if (!user.isBlocked()) {
+      throw new BusinessException("User is not blocked.");
+    }
     userRepository.unblock(id);
   }
 

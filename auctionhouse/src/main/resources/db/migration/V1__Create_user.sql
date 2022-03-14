@@ -13,7 +13,7 @@ CREATE TABLE auction_user
 CREATE TABLE auction_lot
 (
     id                  SERIAL PRIMARY KEY,
-    owner               VARCHAR(50) NOT NULL,
+    owner               VARCHAR(50) NOT NULL REFERENCES auction_user (username),
     symbol              VARCHAR(50) NOT NULL,
     min_price           NUMERIC     NOT NULL,
     quantity            INT         NOT NULL,
@@ -26,8 +26,8 @@ CREATE TABLE auction_lot
 CREATE TABLE bid
 (
     id             SERIAL PRIMARY KEY,
-    auction_lot_id INT         NOT NULL,
-    username       VARCHAR(50) NOT NULL,
+    auction_lot_id INT         NOT NULL REFERENCES auction_lot (id),
+    username       VARCHAR(50) NOT NULL REFERENCES auction_user (username),
     quantity       INT         NOT NULL,
     price          NUMERIC     NOT NULL,
     state          VARCHAR(50) NOT NULL,

@@ -26,10 +26,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
 public class UserControllerTest extends IntegrationTest {
+  public static final int INVALID_USER_ID = 99999;
 
   @Autowired
   private UserService userService;
-  public static final int INVALID_USER_ID = 99999;
   private final Faker faker = new Faker();
 
   @DisplayName("create should return a bad request when the username is duplicated")
